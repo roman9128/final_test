@@ -1,23 +1,11 @@
-﻿/*
-Задача: Написать программу, которая из имеющегося массива строк формирует новый массив из строк, длина которых меньше, либо равна 3 символам.
-Первоначальный массив можно ввести с клавиатуры, либо задать на старте выполнения алгоритма.
-При решении не рекомендуется пользоваться коллекциями, лучше обойтись исключительно массивами.
-
-Примеры:
-[“Hello”, “2”, “world”, “:-)”] → [“2”, “:-)”]
-[“1234”, “1567”, “-2”, “computer science”] → [“-2”]
-[“Russia”, “Denmark”, “Kazan”] → []
-*/
-
-Console.Clear();
-int MakeSize()
+﻿Console.Clear();
+int MakeSize() // функция для определения размера изначального массива, в которую добавлена проверка вводимых данных; чтобы выйти из неё, нужно ввести натуральное число
 {
-    Console.Write("Введите натуральное число: ");
-    string input = Console.ReadLine()!;
+    Console.Write("Вначале определим размер массива \nВведите натуральное число: ");
     while (true)
     {
-        int size;
-        if (int.TryParse(input, out size))
+        string input = Console.ReadLine()!;
+        if (int.TryParse(input, out int size))
         {
             if (size > 0)
             {
@@ -25,38 +13,55 @@ int MakeSize()
             }
             else
             {
-                Console.WriteLine("Вы ввели число, которое не является натуральным. Попробуйте ещё раз: ");
-                input = Console.ReadLine()!;
+                Console.Write("Хорошо, если в массиве будет хотя бы 1 элемент.\nПопробуйте ещё раз: ");
             }
         }
         else
         {
-            Console.WriteLine("Вы ввели что-то, что не является натуральным числом. Попробуйте ещё раз. \nВведите натуральное число: ");
-            input = Console.ReadLine()!;
+            Console.Write("Вы ввели что-то, что не является натуральным числом. \nПопробуйте ещё раз: ");
         }
     }
 }
-void PutTo(string[] array)
+void PutTo(string[] array) // функция для заполнения массива строками с клавиатуры
 {
-    int i = 0;
-    while (i < array.Length)
+    Console.Clear();
+    Console.WriteLine($"Теперь заполним массив");
+    for (int i = 0; i < array.Length; i++)
     {
-        Console.Write($"Введите {i + 1}-ю строку: ");
+        Console.Write($"Введите {i + 1}-ю строку из {array.Length}: ");
         array[i] = Console.ReadLine()!;
-        i++;
     }
 }
-void Show(string[] array, int i = 0)
+void Show(string[] array, int i = 0) // функция для вывода элементов массива с использованием рекурсии
 {
     if (i != array.Length)
     {
-        Console.Write(array[i] + " ");
+        Console.Write($"'{array[i]}' ");
         Show(array, i + 1);
     }
 }
-Console.WriteLine("Вначале определим параметры массива");
-string[] text = new string[MakeSize()];
-PutTo(text);
+string[] RemoveLongText(string[] arr) // функция для наполнения нового массива строками требуемой длины (3 и менее)
+{
+    string[] result = new string[1];
+    int i = 0;
+    foreach (string e in arr)
+    {
+        if (e.Length <= 3)
+        {
+            result[i] = e;
+            i++;
+            Array.Resize(ref result, result.Length + 1); // увеличиваю размер нового массива для следующего подходящего элемента
+        }
+    }
+    Array.Resize(ref result, result.Length - 1); // перед выходом из функции удаляю последний пустой элемент массива, созданный ранее, чтобы размер массива был равен числу элементов в нём
+    return result;
+}
+string[] usertext = new string[MakeSize()];
+PutTo(usertext);
 Console.Clear();
-Console.WriteLine("Вы ввели следующее:");
-Show(text);
+Console.WriteLine("Итак, Вы ввели следующее:");
+Show(usertext);
+Console.WriteLine();
+string[] result = RemoveLongText(usertext);
+Console.WriteLine("Введённые Вами строки, длина которых не больше трёх:");
+Show(result);
